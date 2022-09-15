@@ -21,7 +21,7 @@ server.use((error, req, res, next) => {
 });
 
 server.listen(process.env.PORT, () =>
-  console.log(`Server is listening for requests at port ${process.env.PORT}`)
+  console.log(`Server is listening for requests at port at http://localhost:${process.env.PORT}`)
 );
 
 /*
