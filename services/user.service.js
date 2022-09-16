@@ -1,8 +1,29 @@
 const redisClient = require("../helpers/redis.helper");
-const uuid = require('uuid');
+// const { v4: uuidv4 } = require('uuid');
+const keyHelper = require("../helpers/key.helper");
 
-exports.createUser = async (username, password) => {
-    const gen_user_id = uuid.v4();
-    console.log(gen_user_id);
-    
-}
+exports.createUser = async (email, password) => {
+  try {
+    const redis_user_key = keyHelper.generateUserKey(email);
+
+    // This can be imporved in future, via the response from redis.
+    const user_already_exists = await redisClient.hGet(redis_user_key, "email");
+
+    if (!user_already_exists) {
+      // If the user does not already exists, then save the user.
+      const result = await Promise.all([
+        redisClient.hSet(redis_user_key, email, email),
+        redisClient.hSet(redis_user_key, password, password),
+      ]);
+
+      if (result[0] == 1 && result[1] == 1) {
+        return { status: "User created successfully!" };
+      }
+    }
+    else{
+      console.log('User already exists');
+    }
+  } catch (error) {
+    return error;
+  }
+};
