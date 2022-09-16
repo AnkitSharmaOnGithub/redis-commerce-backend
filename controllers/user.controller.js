@@ -12,9 +12,12 @@ exports.createUser = async (req, res, next) => {
 
     // Check if the user already exist.
     const data = await userService.createUser(email, password);
-    res.send({
-      'generatedKey' : data
-    });
+    if(data.status){
+      res.status(200).send(data);
+    }
+    else{
+      res.status(403).send(data);
+    }
     // Create the user in the redis.
   } catch (err) {
     console.error(`Error while getting users data :-`, err.message);
