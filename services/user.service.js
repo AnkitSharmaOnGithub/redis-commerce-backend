@@ -24,7 +24,7 @@ exports.createUser = async (email, password) => {
     } else {
       setTimeout(() => {
         return { error: "User already exists" };
-      }, 5000000);
+      }, 50000);
     }
   } catch (error) {
     return error;
