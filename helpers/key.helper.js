@@ -1,1 +1,1 @@
-export const generateUserKey = (id) => `users#${id}`;
+exports.generateUserKey = (id) => `users#${id}`;
