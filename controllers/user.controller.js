@@ -1,21 +1,22 @@
-const userService = require('../services/user.service');
+const userService = require("../services/user.service");
 
 exports.createUser = async (req, res, next) => {
   try {
     // Get the username, password & confirm_password from the request body.
-    const {email, password, confirmPassword} = req.body;
+    const { email, password, confirmPassword } = req.body;
     // console.log(email, password, confirmPassword);
 
-    if(password.toLowerCase() !== confirmPassword.toLowerCase()){
-      throw new Error(`The password & the confirm password fields do not match`);
+    if (password.toLowerCase() !== confirmPassword.toLowerCase()) {
+      throw new Error(
+        `The password & the confirm password fields do not match`
+      );
     }
 
     // Check if the user already exist.
     const data = await userService.createUser(email, password);
-    if(data.status){
+    if (data.status) {
       res.status(200).send(data);
-    }
-    else{
+    } else {
       res.status(403).send(data);
     }
     // Create the user in the redis.
@@ -24,3 +25,5 @@ exports.createUser = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.login = async (req, res, next) => {};
