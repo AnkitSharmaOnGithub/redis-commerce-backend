@@ -3,13 +3,20 @@ const express = require("express");
 // Import the 3rd party packages
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+var cors = require('cors');
 
 // Initialize the 3rd party packages
-bodyParser.urlencoded({ extended: false });
 dotenv.config();
 
 // Create the server
 const server = express();
+server.use(cors());
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: false }));
+
+// Import the inhouse files
+const userRoutes = require('./routes/user.route');
+server.use('/user', userRoutes);
 
 // Make the server listen to the PORT(env file)
 server.use((error, req, res, next) => {
