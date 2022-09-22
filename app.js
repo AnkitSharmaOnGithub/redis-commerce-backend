@@ -11,8 +11,8 @@ dotenv.config();
 // Create the server
 const server = express();
 server.use(cors());
-server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
 
 // Import the inhouse files
 const userRoutes = require('./routes/user.route');
@@ -20,7 +20,7 @@ server.use('/user', userRoutes);
 
 // Make the server listen to the PORT(env file)
 server.use((error, req, res, next) => {
-  // console.log(error);
+  console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
