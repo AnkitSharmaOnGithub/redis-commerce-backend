@@ -16,17 +16,26 @@ exports.createUser = async (email, password) => {
         redisClient.hSet(redis_user_key, "password", password),
       ]);
 
-      setTimeout(() => {
         if (result[0] == 1 && result[1] == 1) {
           return { status: "User created successfully!" };
         }
-      }, 50000);
     } else {
-      setTimeout(() => {
         return { error: "User already exists" };
-      }, 50000);
     }
   } catch (error) {
     return error;
   }
 };
+
+exports.login = async (email, password) => {
+  try {
+    const redis_user_key = keyHelper.generateUserKey(email);
+
+    // Get the user data from the redis
+    const user_data = await redisClient.hGetAll(redis_user_key);
+    return user_data;
+
+  } catch (error) {
+    return error;
+  }
+}
