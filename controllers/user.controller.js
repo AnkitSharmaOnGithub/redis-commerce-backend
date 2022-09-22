@@ -62,3 +62,11 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.test = async (req, res, next) => {
+  try {
+    console.log(req.session);
+  } catch (error) {
+    next(error);
+  }
+};
