@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 var cors = require('cors');
+const session = require('express-session');
 
 // Initialize the 3rd party packages
 dotenv.config();
@@ -13,6 +14,14 @@ const server = express();
 server.use(cors());
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
+
+server.set('trust proxy', 1) // trust first proxy
+server.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}))
 
 // Import the inhouse files
 const userRoutes = require('./routes/user.route');
