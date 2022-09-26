@@ -21,11 +21,13 @@ server.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false }
-}))
+}));
 
 // Import the inhouse files
 const userRoutes = require('./routes/user.route');
 server.use('/user', userRoutes);
+const itemRoutes = require('./routes/item.route');
+server.use('/item', itemRoutes);
 
 // Make the server listen to the PORT(env file)
 server.use((error, req, res, next) => {
