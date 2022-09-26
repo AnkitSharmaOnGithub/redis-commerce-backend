@@ -46,6 +46,11 @@ exports.login = async (req, res, next) => {
 
     let user_data = await userService.login(email, password);
 
+    if (user_data && (!user_data.email || !user_data.password)) {
+      throw new Error(`No user exists with the entered credentials`);
+    }
+
+    // Check if the passwords match
     const password_matched = await bcrypt.compare(password, user_data.password);
 
     if (password_matched === true) {
@@ -55,10 +60,9 @@ exports.login = async (req, res, next) => {
       throw new Error("Incorrect user credentials entered.");
     }
 
-    // Check if the passwords match
-
     // Set the session
   } catch (error) {
+    error.statusCode = 403;
     next(error);
   }
 };
