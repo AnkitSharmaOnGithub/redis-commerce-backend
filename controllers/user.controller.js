@@ -54,7 +54,7 @@ exports.login = async (req, res, next) => {
     const password_matched = await bcrypt.compare(password, user_data.password);
 
     if (password_matched === true) {
-      req.session.is_logged_in = true;
+      req.session.isLoggedIn = true;
       req.session.email = email;
       res.status(200).send({ status: "Logged in successfully" });
     } else {
@@ -71,6 +71,7 @@ exports.login = async (req, res, next) => {
 exports.test = async (req, res, next) => {
   try {
     console.log(req.session);
+    res.send(req.session);
   } catch (error) {
     next(error);
   }
