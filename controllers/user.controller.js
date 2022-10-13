@@ -55,6 +55,7 @@ exports.login = async (req, res, next) => {
 
     if (password_matched === true) {
       req.session.is_logged_in = true;
+      req.session.email = email;
       res.status(200).send({ status: "Logged in successfully" });
     } else {
       throw new Error("Incorrect user credentials entered.");
