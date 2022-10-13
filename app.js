@@ -11,7 +11,11 @@ dotenv.config();
 
 // Create the server
 const server = express();
-server.use(cors());
+server.use(cors({
+  origin : 'http://localhost:4200',
+  methods : ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+  credentials : true
+}));
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
