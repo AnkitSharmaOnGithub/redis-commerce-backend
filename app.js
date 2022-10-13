@@ -5,12 +5,15 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 var cors = require('cors');
 const session = require('express-session');
+const RedisStore = require("connect-redis")(session);
 
 // Initialize the 3rd party packages
 dotenv.config();
 
 // Create the server
 const server = express();
+
+// Enable CORS
 server.use(cors({
   origin : 'http://localhost:4200',
   methods : ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
@@ -19,10 +22,18 @@ server.use(cors({
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
+// Setting express-session redis store
+const { createClient } = require("redis");
+let redisClient = createClient({ legacyMode: true  });
+redisClient.connect().catch(console.error)
+
+// Setting express-session
 server.set('trust proxy', 1) // trust first proxy
 server.use(session({
+  store: new RedisStore({ client: redisClient }),
   secret: process.env.SESSION_SECRET,
-  resave: false,
+  resave: true,
+  rolling: true,
   saveUninitialized: true,
   cookie: { secure: false }
 }));
