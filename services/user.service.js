@@ -55,9 +55,12 @@ exports.login = async (email, password) => {
   }
 }
 
-exports.setSession = (user_id,session_data) => {
+exports.setSession = async (user_id,session_data) => {
   console.log(session_data);
-  return redisClient.hSet(keyHelper.generateSessionKey(user_id),session_data);
+  return Promise.all([
+    redisClient.hSet(keyHelper.generateSessionKey(user_id),"isLoggedIn", session_data.isLoggedIn),
+    redisClient.hSet(keyHelper.generateSessionKey(user_id),"email", session_data.email)
+  ]);
 }
 
 const getUserById = async (user_id) => {
