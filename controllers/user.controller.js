@@ -1,7 +1,5 @@
 const userService = require("../services/user.service");
-
-// Add 3rd party packages
-const bcrypt = require("bcryptjs");
+const authHelper = require("../helpers/auth.helper");
 
 exports.createUser = async (req, res, next) => {
   try {
@@ -20,7 +18,7 @@ exports.createUser = async (req, res, next) => {
     }
 
     // Hash the password before storing it.
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await authHelper.hashPassword(password);
 
     // Check if the user already exist.
     const data = await userService.createUser(email, hashedPassword);
@@ -51,11 +49,18 @@ exports.login = async (req, res, next) => {
     }
 
     // Check if the passwords match
-    const password_matched = await bcrypt.compare(password, user_data.password);
+    const password_matched = await authHelper.verifyPassword(
+      password,
+      user_data.password
+    );
 
     if (password_matched === true) {
       req.session.isLoggedIn = true;
       req.session.email = email;
+
+      // Set the session in redis
+      await userService.setSession(user_data.id, req.session);
+
       res.status(200).send({ status: "Logged in successfully" });
     } else {
       throw new Error("Incorrect user credentials entered.");
