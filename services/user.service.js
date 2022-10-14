@@ -8,7 +8,7 @@ exports.createUser = async (email, hashedPassword) => {
     const redis_user_key = keyHelper.generateUserKey(user_id);
 
     // This can be imporved in future, via the response from redis.
-    const user_already_exists = await redisClient.hGet(redis_user_key, id);
+    const user_already_exists = await redisClient.hGet('user_mapping',email);
 
     if (!user_already_exists) {
       // If the user does not already exists, then save the user.
@@ -18,8 +18,16 @@ exports.createUser = async (email, hashedPassword) => {
         redisClient.hSet(redis_user_key, "password", hashedPassword),
       ]);
 
-        if (result[0] == 1 && result[1] == 1) {
-          return { status: "User created successfully!" };
+        if (result[0] == 1 && result[1] == 1 && result[2] == 1) {
+          // Also maintain a seperate redis SET to map the "user" to the "email"
+          const mapping_status = await redisClient.hSet('user_mapping',email,redis_user_key);
+
+          if(mapping_status){
+            return { status: "User created successfully!" };
+          }
+          else{
+            return { error: "Issue in storing mapping to Redis" };
+          }
         }
     } else {
         return { error: "User already exists" };
@@ -31,10 +39,15 @@ exports.createUser = async (email, hashedPassword) => {
 
 exports.login = async (email, password) => {
   try {
-    // const redis_user_key = keyHelper.generateUserKey(email);
-
     // Get the user data from the redis
-    const user_data = await redisClient.hGet(redis_user_key);
+    const user_id = await redisClient.hGet('user_mapping',email);
+
+    // Check if the data exists in redis or not
+    if(!user_id){
+      throw new Error('User does not exits.');
+    }
+    const user_data = await redisClient.hGetAll(user_id);
+
     return user_data;
 
   } catch (error) {
