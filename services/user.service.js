@@ -57,7 +57,7 @@ exports.login = async (email, password) => {
 
 exports.setSession = (user_id,session_data) => {
   console.log(...session_data);
-  return redisClient.hSet(keyHelper.generateSessionKey(user_id),...session_data);
+  return redisClient.hSet(keyHelper.generateSessionKey(user_id),session_data);
 }
 
 const getUserById = async (user_id) => {
