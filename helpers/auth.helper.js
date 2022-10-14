@@ -9,7 +9,3 @@ exports.isLoggedIn = (req, res, next) => {
   }
   next();
 };
-
-exports.getUserById = (req, res, next) => {};
-
-exports.getUserByEmail = (req,res,next) => {}
