@@ -47,12 +47,17 @@ exports.login = async (email, password) => {
       throw new Error('User does not exits.');
     }
     const user_data = await redisClient.hGetAll(user_id);
-
+    
     return user_data;
 
   } catch (error) {
     return error;
   }
+}
+
+exports.setSession = (user_id,session_data) => {
+  console.log(...session_data);
+  return redisClient.hSet(keyHelper.generateSessionKey(user_id),...session_data);
 }
 
 const getUserById = async (user_id) => {
