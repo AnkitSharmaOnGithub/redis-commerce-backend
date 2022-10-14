@@ -41,3 +41,18 @@ exports.login = async (email, password) => {
     return error;
   }
 }
+
+const getUserById = async (user_id) => {
+  try {
+    const redis_user_key = keyHelper.generateUserKey(user_id);
+    const user_data = await redisClient.hGetAll(redis_user_key);
+
+    return user_data;
+  } catch (error) {
+    return error;
+  }
+};
+
+const getUserByEmail = (email) => {
+
+}
