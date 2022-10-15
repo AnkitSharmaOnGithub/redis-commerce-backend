@@ -60,7 +60,9 @@ exports.login = async (req, res, next) => {
 
       // Set the session in redis
       await userService.setSession(user_data.id, req.session);
-
+      res.cookie('redis-commerce-cookie',JSON.stringify({
+        "id" : user_data.id
+      }),{maxAge: 1000 * 10});
       res.status(200).send({ status: "Logged in successfully" });
     } else {
       throw new Error("Incorrect user credentials entered.");
