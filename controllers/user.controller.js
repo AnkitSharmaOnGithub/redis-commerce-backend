@@ -59,11 +59,17 @@ exports.login = async (req, res, next) => {
       req.session.email = email;
 
       // Set the session in redis
-      await userService.setSession(user_data.id, req.session);
-      res.cookie('redis-commerce-cookie',JSON.stringify({
-        "id" : user_data.id
-      }),{maxAge: 1000 * 10});
-      res.status(200).send({ status: "Logged in successfully" });
+      const session_status = await userService.setSession(user_data.id, req.session);
+
+      if(session_status){
+        res.cookie('redis-commerce-cookie',JSON.stringify({
+          "id" : user_data.id
+        }),{maxAge: 1000 * 10});
+        res.status(200).send({ status: "Logged in successfully" });
+      }
+      else{
+        throw new Error('Error occured while setting session data');
+      }
     } else {
       throw new Error("Incorrect user credentials entered.");
     }
@@ -77,7 +83,10 @@ exports.login = async (req, res, next) => {
 
 exports.test = async (req, res, next) => {
   try {
-    console.log(req.session);
+    // console.log(req.session);
+    // const cookie = req.headers.cookie;
+    console.log(req.headers.cookie);
+
     res.send(req.session);
   } catch (error) {
     next(error);
