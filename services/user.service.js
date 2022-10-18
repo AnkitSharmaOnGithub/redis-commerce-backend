@@ -57,9 +57,16 @@ exports.login = async (email, password) => {
   }
 };
 
-exports.setSession = async (user_id, session_data) => {
+exports.generateSessionRedisKey = async (session_id) => keyHelper.generateSessionKey(session_id);
+
+exports.set_session_in_redis = async (session_id, session_data) => {
   try {
-    const redis_user_key = keyHelper.generateSessionKey(user_id);
+    const redis_user_key = keyHelper.generateSessionKey(session_id);
+
+    // Store the session data in redis
+
+    // Store the session mapping to the email
+
     const result = await Promise.all([
       redisClient.hSet(redis_user_key, "isLoggedIn", session_data.isLoggedIn),
       redisClient.hSet(redis_user_key, "email", session_data.email),
