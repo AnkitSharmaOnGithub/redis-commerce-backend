@@ -59,17 +59,12 @@ exports.login = async (email, password) => {
 
 exports.generateSessionRedisKey = async (session_id) => keyHelper.generateSessionKey(session_id);
 
-exports.set_session_in_redis = async (session_id, session_data) => {
+exports.set_session_in_redis = async (session_key, session_data) => {
   try {
-    const redis_user_key = keyHelper.generateSessionKey(session_id);
-
     // Store the session data in redis
-
-    // Store the session mapping to the email
-
     const result = await Promise.all([
-      redisClient.hSet(redis_user_key, "isLoggedIn", session_data.isLoggedIn),
-      redisClient.hSet(redis_user_key, "email", session_data.email),
+      await redisClient.hSet(session_key,'email', session_data.email),
+      await redisClient.hSet(session_key,'id', session_data.id),
     ]);
 
     if (result[0] == 1 && result[1] == 1) {
@@ -80,11 +75,15 @@ exports.set_session_in_redis = async (session_id, session_data) => {
   }
 };
 
-const getUserById = async (user_id) => {
+exports.getUserById = async (user_id) => {
   try {
     const redis_user_key = keyHelper.generateUserKey(user_id);
     const user_data = await redisClient.hGetAll(redis_user_key);
 
+    if(!user_data){
+      throw new Error(`No user found with the data. Login & try again`);
+    }
+    
     return user_data;
   } catch (error) {
     return error;

@@ -1,6 +1,7 @@
 const userService = require("../services/user.service");
 const authHelper = require("../helpers/auth.helper");
 const { v4: uuidv4 } = require("uuid");
+const cookieParser = require("cookie-parser");
 
 exports.createUser = async (req, res, next) => {
   try {
@@ -69,10 +70,10 @@ exports.login = async (req, res, next) => {
 
       // Store the session data in redis
       const session_redis_status = await userService.set_session_in_redis(
-        session_id,
+        session_key,
         user_data
       );
-
+        
       res.status(200).send({ status: "Logged in successfully" });
     }
 
@@ -85,14 +86,19 @@ exports.login = async (req, res, next) => {
 
 exports.test = async (req, res, next) => {
   try {
-    let cookie_data = req.headers.cookie;
-    console.log(cookie_data);
+    let cookie_data = Object.keys(req.cookies).length > 0 ? cookieParser.JSONCookies(req.cookies) : null;
 
-    let cookie_value = cookie_data.split("=")[1];
-    console.log(cookie_value);
-    // console.log(JSON.parse(cookie_value));
+    const session_key = Object.keys(cookie_data).filter(el => el.includes('session'));
+    const session_value = cookie_data[session_key] ? JSON.parse(cookie_data[session_key]) : null;
+    const user_id = session_value?.id;
 
-    res.send(cookie_data);
+    if(!user_id){
+      throw new Error(`Unable to get the user_id. Try login again`);
+    }
+
+    const user_data = await userService.getUserById(user_id);
+    res.status(200).send(user_data);
+    
   } catch (error) {
     next(error);
   }

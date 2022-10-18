@@ -1,17 +1,19 @@
 // Add 3rd party packages
 const bcrypt = require("bcryptjs");
+const cookieParser = require('cookie-parser');
 
 exports.isLoggedIn = (req, res, next) => {
   try {
-    const cookies_array = req.headers.cookie.split(",");
-    console.log(cookies_array);
+    const cookies_array = req.cookies;
+    // console.log(cookies_array);
 
     // Check if the "redis-commerce-cookie" cookie is contained in the cookies
     let login_cookie_exists = false;
-    for (const cookie of cookies_array) {
-      const cookie_data = cookie.split("=");
-      if (cookie_data[0] === "redis-commerce-cookie") {
-        console.log("Cookie exists");
+    for (const cookie in cookies_array) {
+      console.log(cookie);
+      const cookie_initial = cookie.split("#")[0];
+      if (cookie_initial === "session") {
+        // console.log("Cookie exists");
         login_cookie_exists = true;
       }
     }
