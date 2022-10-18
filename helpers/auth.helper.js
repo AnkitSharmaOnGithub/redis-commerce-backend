@@ -2,13 +2,25 @@
 const bcrypt = require("bcryptjs");
 
 exports.isLoggedIn = (req, res, next) => {
-  // console.log(req.url);
-  console.log(req.session);
+  try {
+    const cookies_array = req.headers.cookie.split(",");
+    console.log(cookies_array);
 
-  const excluded_urls = ["/user/create", "/user/login"];
+    // Check if the "redis-commerce-cookie" cookie is contained in the cookies
+    let login_cookie_exists = false;
+    for (const cookie of cookies_array) {
+      const cookie_data = cookie.split("=");
+      if (cookie_data[0] === "redis-commerce-cookie") {
+        console.log("Cookie exists");
+        login_cookie_exists = true;
+      }
+    }
 
-  if (!excluded_urls.includes(req.url) && req.session.isLoggedIn !== true) {
-    throw new Error("Please login and the continue!");
+    if (!login_cookie_exists) {
+      throw new Error(`User not logged in`);
+    }
+  } catch (error) {
+    next(error);
   }
   next();
 };
