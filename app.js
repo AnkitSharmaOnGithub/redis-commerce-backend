@@ -1,11 +1,10 @@
 const express = require("express");
+const cookieParser = require('cookie-parser');
 
 // Import the 3rd party packages
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 var cors = require('cors');
-const session = require('express-session');
-const RedisStore = require("connect-redis")(session);
 
 // Initialize the 3rd party packages
 dotenv.config();
@@ -22,21 +21,7 @@ server.use(cors({
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
-// Setting express-session redis store
-// const { createClient } = require("redis");
-// let redisClient = createClient({ legacyMode: true  });
-// redisClient.connect().catch(console.error)
-
-// Setting express-session
-server.set('trust proxy', 1) // trust first proxy
-server.use(session({
-  // store: new RedisStore({ client: redisClient }),
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  rolling: true,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
+server.use(cookieParser());
 
 // Import the inhouse files
 const userRoutes = require('./routes/user.route');
