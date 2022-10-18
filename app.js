@@ -23,14 +23,14 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
 // Setting express-session redis store
-// const { createClient } = require("redis");
-// let redisClient = createClient({ legacyMode: true  });
-// redisClient.connect().catch(console.error)
+const { createClient } = require("redis");
+let redisClient = createClient({ legacyMode: true  });
+redisClient.connect().catch(console.error)
 
 // Setting express-session
 server.set('trust proxy', 1) // trust first proxy
 server.use(session({
-  // store: new RedisStore({ client: redisClient }),
+  store: new RedisStore({ client: redisClient }),
   secret: process.env.SESSION_SECRET,
   resave: true,
   rolling: true,
