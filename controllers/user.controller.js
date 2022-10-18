@@ -1,5 +1,7 @@
 const userService = require("../services/user.service");
 const authHelper = require("../helpers/auth.helper");
+const { v4: uuidv4 } = require("uuid");
+const cookieParser = require("cookie-parser");
 
 exports.createUser = async (req, res, next) => {
   try {
@@ -55,23 +57,24 @@ exports.login = async (req, res, next) => {
     );
 
     if (password_matched === true) {
-      req.session.isLoggedIn = true;
-      req.session.email = email;
+      // Generate session uuid
+      const session_id = uuidv4();
+      const session_key = await userService.generateSessionRedisKey(session_id);
+      res.cookie(
+        session_key,
+        JSON.stringify({
+          id: user_data.id,
+        }),
+        { expires: new Date(Date.now() + 90000000) }
+      );
 
-      // Set the session in redis
-      const session_status = await userService.setSession(user_data.id, req.session);
-
-      if(session_status){
-        res.cookie('redis-commerce-cookie',JSON.stringify({
-          "id" : user_data.id
-        }),{maxAge: 1000 * 10});
-        res.status(200).send({ status: "Logged in successfully" });
-      }
-      else{
-        throw new Error('Error occured while setting session data');
-      }
-    } else {
-      throw new Error("Incorrect user credentials entered.");
+      // Store the session data in redis
+      const session_redis_status = await userService.set_session_in_redis(
+        session_key,
+        user_data
+      );
+        
+      res.status(200).send({ status: "Logged in successfully" });
     }
 
     // Set the session
@@ -83,11 +86,19 @@ exports.login = async (req, res, next) => {
 
 exports.test = async (req, res, next) => {
   try {
-    // console.log(req.session);
-    // const cookie = req.headers.cookie;
-    console.log(req.headers.cookie);
+    let cookie_data = Object.keys(req.cookies).length > 0 ? cookieParser.JSONCookies(req.cookies) : null;
 
-    res.send(req.session);
+    const session_key = Object.keys(cookie_data).filter(el => el.includes('session'));
+    const session_value = cookie_data[session_key] ? JSON.parse(cookie_data[session_key]) : null;
+    const user_id = session_value?.id;
+
+    if(!user_id){
+      throw new Error(`Unable to get the user_id. Try login again`);
+    }
+
+    const user_data = await userService.getUserById(user_id);
+    res.status(200).send(user_data);
+    
   } catch (error) {
     next(error);
   }
