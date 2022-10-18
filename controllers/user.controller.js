@@ -58,7 +58,7 @@ exports.login = async (req, res, next) => {
     if (password_matched === true) {
       // Generate session uuid
       const session_id = uuidv4();
-      const session_key = await generateSessionRedisKey();
+      const session_key = await userService.generateSessionRedisKey(session_id);
       res.cookie(
         session_key,
         JSON.stringify({
