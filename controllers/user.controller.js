@@ -56,28 +56,14 @@ exports.login = async (req, res, next) => {
       user_data.password
     );
 
-    if (password_matched === true) {
-      // Generate session uuid
-      const session_id = uuidv4();
-      const session_key = await userService.generateSessionRedisKey(session_id);
-      res.cookie(
-        session_key,
-        JSON.stringify({
-          id: user_data.id,
-        }),
-        { expires: new Date(Date.now() + 90000000) }
-      );
+    if (password_matched === true) {        
+      // Set the session
+      req.session.is_logged_in = true;
+      req.session.email = user_data.email;
+      req.session.id = user_data.id;
 
-      // Store the session data in redis
-      const session_redis_status = await userService.set_session_in_redis(
-        session_key,
-        user_data
-      );
-        
       res.status(200).send({ status: "Logged in successfully" });
     }
-
-    // Set the session
   } catch (error) {
     error.statusCode = 403;
     next(error);
@@ -86,11 +72,8 @@ exports.login = async (req, res, next) => {
 
 exports.test = async (req, res, next) => {
   try {
-    let cookie_data = Object.keys(req.cookies).length > 0 ? cookieParser.JSONCookies(req.cookies) : null;
-
-    const session_key = Object.keys(cookie_data).filter(el => el.includes('session'));
-    const session_value = cookie_data[session_key] ? JSON.parse(cookie_data[session_key]) : null;
-    const user_id = session_value?.id;
+    let session_data = req.session;
+    const user_id = session_data.id;
 
     if(!user_id){
       throw new Error(`Unable to get the user_id. Try login again`);
