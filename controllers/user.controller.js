@@ -1,5 +1,6 @@
 const userService = require("../services/user.service");
 const authHelper = require("../helpers/auth.helper");
+const { v4: uuidv4 } = require("uuid");
 
 exports.createUser = async (req, res, next) => {
   try {
@@ -55,23 +56,24 @@ exports.login = async (req, res, next) => {
     );
 
     if (password_matched === true) {
-      req.session.isLoggedIn = true;
-      req.session.email = email;
+      // Generate session uuid
+      const session_id = uuidv4();
+      const session_key = await generateSessionRedisKey();
+      res.cookie(
+        session_key,
+        JSON.stringify({
+          id: user_data.id,
+        }),
+        { expires: new Date(Date.now() + 90000000) }
+      );
 
-      // Set the session in redis
-      const session_status = await userService.setSession(user_data.id, req.session);
+      // Store the session data in redis
+      const session_redis_status = await userService.set_session_in_redis(
+        session_id,
+        user_data
+      );
 
-      if(session_status){
-        res.cookie('redis-commerce-cookie',JSON.stringify({
-          "id" : user_data.id
-        }),{maxAge: 1000 * 10});
-        res.status(200).send({ status: "Logged in successfully" });
-      }
-      else{
-        throw new Error('Error occured while setting session data');
-      }
-    } else {
-      throw new Error("Incorrect user credentials entered.");
+      res.status(200).send({ status: "Logged in successfully" });
     }
 
     // Set the session
@@ -83,11 +85,14 @@ exports.login = async (req, res, next) => {
 
 exports.test = async (req, res, next) => {
   try {
-    // console.log(req.session);
-    // const cookie = req.headers.cookie;
-    console.log(req.headers.cookie);
+    let cookie_data = req.headers.cookie;
+    console.log(cookie_data);
 
-    res.send(req.session);
+    let cookie_value = cookie_data.split("=")[1];
+    console.log(cookie_value);
+    // console.log(JSON.parse(cookie_value));
+
+    res.send(cookie_data);
   } catch (error) {
     next(error);
   }
