@@ -57,21 +57,21 @@ exports.login = async (email, password) => {
   }
 };
 
-exports.setSession = async (user_id, session_data) => {
-  try {
-    const redis_user_key = keyHelper.generateSessionKey(user_id);
-    const result = await Promise.all([
-      redisClient.hSet(redis_user_key, "isLoggedIn", session_data.isLoggedIn),
-      redisClient.hSet(redis_user_key, "email", session_data.email),
-    ]);
+// exports.setSession = async (user_id, session_data) => {
+//   try {
+//     const redis_user_key = keyHelper.generateSessionKey(user_id);
+//     const result = await Promise.all([
+//       redisClient.hSet(redis_user_key, "isLoggedIn", session_data.isLoggedIn),
+//       redisClient.hSet(redis_user_key, "email", session_data.email),
+//     ]);
 
-    if (result[0] == 1 && result[1] == 1) {
-      return true;
-    }
-  } catch (error) {
-    return error;
-  }
-};
+//     if (result[0] == 1 && result[1] == 1) {
+//       return true;
+//     }
+//   } catch (error) {
+//     return error;
+//   }
+// };
 
 const getUserById = async (user_id) => {
   try {
