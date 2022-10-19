@@ -1,3 +1,5 @@
+
+
 exports.createItem = async (req, res, next) => {
   try {
     // console.log(req.session);
@@ -15,8 +17,10 @@ exports.createItem = async (req, res, next) => {
 
     let { name, desc, price, valid_till } = req.body;
 
-    console.log(name, desc, price, valid_till);
-    res.send(name, desc, price, valid_till);
+    let valid_till_timestamp = new Date(valid_till).getTime();
+
+    console.log(name, desc, price, valid_till_timestamp);
+    res.send({name, desc, price, valid_till});
   } catch (err) {
     console.error(`Error while creating item :-`, err.message);
     next(err);
