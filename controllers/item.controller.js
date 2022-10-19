@@ -20,7 +20,9 @@ exports.createItem = async (req, res, next) => {
     let valid_till_timestamp = new Date(valid_till).getTime();
 
     // Store the data in redis via service
-    // await itemService.
+    await itemService.createItem({
+      name,desc,price,"valid_till" : valid_till_timestamp
+    })
 
     res.send({name, desc, price, valid_till});
   } catch (err) {
