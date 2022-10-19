@@ -1,4 +1,4 @@
-
+const itemService = require("../services/item.service");
 
 exports.createItem = async (req, res, next) => {
   try {
