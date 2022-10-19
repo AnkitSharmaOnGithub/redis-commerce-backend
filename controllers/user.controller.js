@@ -60,7 +60,7 @@ exports.login = async (req, res, next) => {
       // Set the session
       req.session.is_logged_in = true;
       req.session.email = user_data.email;
-      req.session.id = user_data.id;
+      req.session.user_id = user_data.user_id;
 
       res.status(200).send({ status: "Logged in successfully" });
     }
@@ -73,7 +73,7 @@ exports.login = async (req, res, next) => {
 exports.test = async (req, res, next) => {
   try {
     let session_data = req.session;
-    const user_id = session_data.id;
+    const user_id = session_data.user_id;
 
     if(!user_id){
       throw new Error(`Unable to get the user_id. Try login again`);
