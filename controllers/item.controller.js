@@ -4,7 +4,7 @@ exports.createItem = async (req, res, next) => {
 
     let keys = ["name", "desc", "price", "valid_till"];
 
-    const { name, desc, price, valid_till } = req.body;
+    let { name, desc, price, valid_till } = req.body;
     
     // Trim the fields & do validations
     for(const key of keys){
