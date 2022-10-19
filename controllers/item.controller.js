@@ -4,7 +4,7 @@ exports.createItem = async (req, res, next) => {
   try {
     // console.log(req.session);
 
-    const keys = ["name", "desc", "price", "valid_till"];
+    // const keys = ["name", "desc", "price", "valid_till"];
     
     // Trim the fields & do validations
     for (let key in req.body) {
@@ -19,7 +19,9 @@ exports.createItem = async (req, res, next) => {
 
     let valid_till_timestamp = new Date(valid_till).getTime();
 
-    console.log(name, desc, price, valid_till_timestamp);
+    // Store the data in redis via service
+    // await itemService.
+
     res.send({name, desc, price, valid_till});
   } catch (err) {
     console.error(`Error while creating item :-`, err.message);
