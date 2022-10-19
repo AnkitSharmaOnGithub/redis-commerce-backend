@@ -1,20 +1,22 @@
 exports.createItem = async (req, res, next) => {
   try {
-    console.log(req.session);
+    // console.log(req.session);
 
-    let keys = ["name", "desc", "price", "valid_till"];
-
-    let { name, desc, price, valid_till } = req.body;
+    const keys = ["name", "desc", "price", "valid_till"];
     
     // Trim the fields & do validations
-    for(const key of keys){
-        if(!key){
-            throw new Error(`${key} cannot be empty`);
-        }
-        key = key.trim();
+    for (let key in req.body) {
+      if (!req.body[key].trim()) {
+        throw new Error(`${key} cannot be empty`);
+      }
+
+      req.body[key] = req.body[key].trim();
     }
 
+    let { name, desc, price, valid_till } = req.body;
+
     console.log(name, desc, price, valid_till);
+    res.send(name, desc, price, valid_till);
   } catch (err) {
     console.error(`Error while creating item :-`, err.message);
     next(err);
