@@ -32,5 +32,15 @@ exports.createItem = async (req, res, next) => {
 };
 
 exports.getItem = async (req,res,next) => {
-  
+  try {
+    const itemId = req.params.itemId;
+
+    if(!itemId){
+      throw new Error(`Item id is not specified`);
+    }
+
+    await itemService.getItem(itemId);
+  } catch (error) {
+    
+  }
 }
