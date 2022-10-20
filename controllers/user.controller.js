@@ -1,7 +1,5 @@
 const userService = require("../services/user.service");
 const authHelper = require("../helpers/auth.helper");
-const { v4: uuidv4 } = require("uuid");
-const cookieParser = require("cookie-parser");
 
 exports.createUser = async (req, res, next) => {
   try {
