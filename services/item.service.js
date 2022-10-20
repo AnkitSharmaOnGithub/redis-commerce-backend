@@ -17,3 +17,7 @@ exports.createItem = async (itemData) => {
     // Map the user to the item
     
 }
+
+exports.getItem = async (itemId) => {
+    
+}
