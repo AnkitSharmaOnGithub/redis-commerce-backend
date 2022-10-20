@@ -10,6 +10,6 @@ router.post('/create', authHelper.isLoggedIn, itemController.createItem);
 // Get all items
 
 // Get a specific item
-router.post('/get/:itemId', authHelper.isLoggedIn, itemController.getItem);
+router.get('/get/:itemId', authHelper.isLoggedIn, itemController.getItem);
 
 module.exports = router;
