@@ -19,5 +19,12 @@ exports.createItem = async (itemData) => {
 }
 
 exports.getItem = async (itemId) => {
-    
-}
+  try {
+    const itemKey = keyHelper.generateItemKey(itemId);
+
+    const item = await redisClient.hGet(itemKey);
+    return item;
+  } catch (error) {
+    return error;
+  }
+};
