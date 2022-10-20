@@ -30,3 +30,7 @@ exports.createItem = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getItem = async (req,res,next) => {
+  
+}
