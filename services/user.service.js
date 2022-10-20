@@ -1,10 +1,10 @@
 const redisClient = require("../helpers/redis.helper");
-const { v4: uuidv4 } = require("uuid");
 const keyHelper = require("../helpers/key.helper");
+const uuidHelper = require("../helpers/uuid.helper");
 
 exports.createUser = async (email, hashedPassword) => {
   try {
-    const user_id = uuidv4();
+    const user_id = uuidHelper.generateUniqueUuidKey();
     const redis_user_key = keyHelper.generateUserKey(user_id);
 
     // This can be imporved in future, via the response from redis.
