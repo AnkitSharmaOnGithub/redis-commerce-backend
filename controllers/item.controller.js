@@ -20,11 +20,15 @@ exports.createItem = async (req, res, next) => {
     let valid_till_timestamp = new Date(valid_till).getTime();
 
     // Store the data in redis via service
-    await itemService.createItem({
+    const creation_status = await itemService.createItem({
       name,desc,price,"valid_till" : valid_till_timestamp
     })
 
-    res.send({name, desc, price, valid_till});
+    if(creation_status === true){
+      res.send({
+        "message" : 'Item created successfully.'
+      });
+    }
   } catch (err) {
     console.error(`Error while creating item :-`, err.message);
     next(err);
@@ -34,6 +38,7 @@ exports.createItem = async (req, res, next) => {
 exports.getItem = async (req, res, next) => {
   try {
     const itemId = req.params.itemId;
+    console.log(itemId);
     if (!itemId) {
       throw new Error(`Item id is not specified`);
     }
