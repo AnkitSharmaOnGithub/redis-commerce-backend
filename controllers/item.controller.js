@@ -24,7 +24,7 @@ exports.createItem = async (req, res, next) => {
       name,desc,price,"valid_till" : valid_till_timestamp
     })
 
-    if(creation_status === true){
+    if(creation_status.status === true && creation_status.created_item_id){
       res.send({
         "message" : 'Item created successfully.'
       });
