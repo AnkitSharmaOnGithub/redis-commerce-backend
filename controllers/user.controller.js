@@ -6,6 +6,9 @@ exports.createUser = async (req, res, next) => {
     // Get the username, password & confirm_password from the request body.
     let { email, password, confirmPassword } = req.body;
 
+    // See if the username already exists in the set of usernames
+    const user_exists = await userService.checkUserExists(email);
+
     // Trim the whitespaces
     email = email.trim();
     password = password.trim();
