@@ -45,9 +45,21 @@ exports.getItem = async (req, res, next) => {
     const item = await itemService.getItem(itemId);
 
     if (!item) {
-      throw new Error();
+      throw new Error(`No item find with id: ${itemId}`);
     }
+
+    res.status(200).send(desearlizeItem(item, itemId));
   } catch (error) {
     next(error);
   }
 };
+
+function desearlizeItem(item, id){
+  return {
+    id,
+    name: item.name,
+    desc: item.desc,
+    price: item.price,
+    valid_till: item.valid_till
+  };
+}
