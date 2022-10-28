@@ -2,6 +2,17 @@ const redisClient = require("../helpers/redis.helper");
 const keyHelper = require("../helpers/key.helper");
 const uuidHelper = require("../helpers/uuid.helper");
 
+exports.checkUserExists = async (email) => {
+  // See if the username already exists in the set of usernames
+  const user_exists = await redisClient.sIsMember('usernames',email);
+  // If so, throw an error
+  if(user_exists){
+    throw new Error('Username already exists');
+  }
+  // Else, continue
+  return user_exists;
+}
+
 exports.createUser = async (email, hashedPassword) => {
   try {
     const user_id = uuidHelper.generateUniqueUuidKey();
