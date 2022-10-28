@@ -7,7 +7,7 @@ exports.checkUserExists = async (email) => {
   const user_exists = await redisClient.sIsMember('usernames',email);
   // If so, throw an error
   if(user_exists){
-    throw new Error('Username already exists');
+    throw new Error('Username is already taken.');
   }
   // Else, continue
   return user_exists;
@@ -38,6 +38,9 @@ exports.createUser = async (email, hashedPassword) => {
         );
 
         if (mapping_status) {
+          // Add the user to the usernames set
+          await redisClient.sAdd(keyHelper.generateUniqueUserKey(),email);
+
           return { status: "User created successfully!" };
         } else {
           return { error: "Issue in storing mapping to Redis" };
