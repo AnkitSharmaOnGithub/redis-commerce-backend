@@ -12,4 +12,7 @@ router.post('/create', authHelper.isLoggedIn, itemController.createItem);
 // Get a specific item
 router.get('/get/:itemId', authHelper.isLoggedIn, itemController.getItem);
 
+// Like an item
+router.post('/like', authHelper.isLoggedIn, itemController.likeItem);
+
 module.exports = router;
