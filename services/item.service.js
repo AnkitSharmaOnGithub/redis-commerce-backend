@@ -16,7 +16,7 @@ exports.createItem = async (itemData) => {
     ]);
 
     if (creation_status.every((el) => el === 1)) {
-      return { "status": true, "created_item_id": item_key };
+      return { "status": true, "created_item_id": item_id };
     }
 
     // Map the user to the item
@@ -35,3 +35,8 @@ exports.getItem = async (itemId) => {
     return error;
   }
 };
+
+exports.likeItem = async (itemId) => {
+  
+}
+  
