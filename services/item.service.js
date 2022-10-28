@@ -43,7 +43,11 @@ exports.likeItem = async (itemId, user_id) => {
     const item_add_status = await redisClient.sAdd(user_item_key, itemId);
 
     if (!item_add_status) {
-      throw new Error("Liking the item failed. Please check if you have already like this item before.");
+      const item_already_liked = await redisClient.sIsMember(user_item_key, itemId);
+      if (item_already_liked) {
+        throw new Error(`Item with id ${itemId} has been already liked before.`);
+      }
+      throw new Error("Liking the item failed. ");
     }
 
     return { status: true };
