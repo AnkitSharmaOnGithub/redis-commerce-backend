@@ -43,7 +43,7 @@ exports.likeItem = async (itemId, user_id) => {
     const item_add_status = await redisClient.sAdd(user_item_key, itemId);
 
     if (!item_add_status) {
-      throw new Error("Liking the item failed");
+      throw new Error("Liking the item failed. Please check if you have already like this item before.");
     }
 
     return { status: true };
