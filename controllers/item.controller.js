@@ -63,9 +63,13 @@ exports.likeItem = async (req, res,next) => {
   }
 
   const user_data = req.session;
+  const user_id = user_data.user_id;
 
-  console.log(user_data);
-  await itemService.likeItem(itemId);
+  const add_like_status = await itemService.likeItem(itemId, user_id);
+
+  if(add_like_status && add_like_status.status === true){
+    res.status(200).send(`Item with id ${itemId} has been added successfully`);
+  }
 }
 
 // --------------- Utility functions ------------------------
