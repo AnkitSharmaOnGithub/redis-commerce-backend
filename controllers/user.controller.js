@@ -9,28 +9,30 @@ exports.createUser = async (req, res, next) => {
     // See if the username already exists in the set of usernames
     const user_exists = await userService.checkUserExists(email);
 
-    // Trim the whitespaces
-    email = email.trim();
-    password = password.trim();
-    confirmPassword = confirmPassword.trim();
-
-    if (password.toLowerCase() !== confirmPassword.toLowerCase()) {
-      throw new Error(
-        `The password & the confirm password fields do not match`
-      );
+    if(!user_exists){
+      // Trim the whitespaces
+      email = email.trim();
+      password = password.trim();
+      confirmPassword = confirmPassword.trim();
+  
+      if (password.toLowerCase() !== confirmPassword.toLowerCase()) {
+        throw new Error(
+          `The password & the confirm password fields do not match`
+        );
+      }
+  
+      // Hash the password before storing it.
+      const hashedPassword = await authHelper.hashPassword(password);
+  
+      // Check if the user already exist, & if not, create a new user
+      const data = await userService.createUser(email, hashedPassword);
+      if (data.status) {
+        res.status(200).send(data);
+      } else {
+        res.status(403).send(data);
+      }
+      //// Create the user in the redis.
     }
-
-    // Hash the password before storing it.
-    const hashedPassword = await authHelper.hashPassword(password);
-
-    // Check if the user already exist.
-    const data = await userService.createUser(email, hashedPassword);
-    if (data.status) {
-      res.status(200).send(data);
-    } else {
-      res.status(403).send(data);
-    }
-    // Create the user in the redis.
   } catch (err) {
     console.error(`Error while getting users data :-`, err.message);
     next(err);
