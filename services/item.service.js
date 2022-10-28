@@ -36,7 +36,20 @@ exports.getItem = async (itemId) => {
   }
 };
 
-exports.likeItem = async (itemId) => {
-  
+exports.likeItem = async (itemId, user_id) => {
+  try {
+    const user_item_key = keyHelper.generateUserLikeKey(user_id);
+
+  const item_add_status = await redisClient.sAdd(user_item_key, itemId);
+
+  if(!item_add_status){
+    throw new Error("Liking the item failed");
+  }
+
+  return { "status": true };
+  } catch (error) {
+    
+  }
+
 }
   
