@@ -26,7 +26,8 @@ exports.createItem = async (req, res, next) => {
 
     if(creation_status.status === true && creation_status.created_item_id){
       res.send({
-        "message" : 'Item created successfully.'
+        "message" : 'Item created successfully.',
+        "item_id" : creation_status.created_item_id
       });
     }
   } catch (err) {
@@ -38,7 +39,7 @@ exports.createItem = async (req, res, next) => {
 exports.getItem = async (req, res, next) => {
   try {
     const itemId = req.params.itemId;
-    console.log(itemId);
+    
     if (!itemId) {
       throw new Error(`Item id is not specified`);
     }
@@ -53,6 +54,21 @@ exports.getItem = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.likeItem = async (req, res,next) => {
+  const itemId = req.body.itemId;
+
+  if (!itemId) {
+    throw new Error(`Item id is not specified`);
+  }
+
+  const user_data = req.session;
+
+  console.log(user_data);
+  await itemService.likeItem(itemId);
+}
+
+// --------------- Utility functions ------------------------
 
 function desearlizeItem(item, id){
   return {
