@@ -73,7 +73,7 @@ exports.login = async (req, res, next) => {
   }
 };
 
-exports.viewUser = async (req, res, next) => {
+exports.getLikedItems = async (req, res, next) => {
   try {
     const user_data = req.session;
     const user_id = user_data.user_id;
