@@ -76,10 +76,10 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
     const userLikeItemKey = keyHelper.generateUserLikeKey(toViewUserId);
     const likedItems = await redisClient.sMembers(userLikeItemKey);
     let response = {};
-    console.log(likedItems);
+    // console.log(likedItems);
 
     if(!likedItems || !likedItems.length) {
-      response['message'] = 'The user has no liked items';
+      response['message'] = 'The user has no liked items.';
     }
 
     return response;
