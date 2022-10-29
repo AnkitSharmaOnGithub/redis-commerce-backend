@@ -80,8 +80,10 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
 
     if(!likedItems || !likedItems.length) {
       response['message'] = 'The user has no liked items.';
+      return response;
     }
 
+    response = likedItems;
     return response;
   } catch (error) {
     return error;
