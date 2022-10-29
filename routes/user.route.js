@@ -9,7 +9,7 @@ router.post('/create', userController.createUser);
 
 router.post('/login', userController.login);
 
-router.post('/view', authHelper.isLoggedIn, userController.viewUser)
+router.post('/getLikedItems', authHelper.isLoggedIn, userController.getLikedItems)
 
 router.get('/test', authHelper.isLoggedIn, userController.test);
 
