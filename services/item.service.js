@@ -39,18 +39,29 @@ exports.getItem = async (itemId) => {
 exports.likeItem = async (itemId, user_id) => {
   try {
     const user_item_key = keyHelper.generateUserLikeKey(user_id);
+    const item_key = keyHelper.generateItemKey(itemId);
+    // Check if item to be liked already exists or not
+    const item_present = await redisClient.hExists(item_key, "name");
+    
+    if (item_present) {
+      const item_add_status = await redisClient.sAdd(user_item_key, itemId);
 
-    const item_add_status = await redisClient.sAdd(user_item_key, itemId);
-
-    if (!item_add_status) {
-      const item_already_liked = await redisClient.sIsMember(user_item_key, itemId);
-      if (item_already_liked) {
-        throw new Error(`Item with id ${itemId} has been already liked before.`);
+      if (!item_add_status) {
+        const item_already_liked = await redisClient.sIsMember(
+          user_item_key,
+          itemId
+        );
+        if (item_already_liked) {
+          throw new Error(
+            `Item with id ${itemId} has been already liked before.`
+          );
+        }
+        throw new Error("Liking the item failed. ");
       }
-      throw new Error("Liking the item failed. ");
+
+      return { status: true };
     }
 
-    return { status: true };
   } catch (error) {
     return error;
   }
