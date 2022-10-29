@@ -75,7 +75,7 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
   try {
     const userLikeItemKey = keyHelper.generateUserLikeKey(toViewUserId);
     const likedItems = await redisClient.sMembers(userLikeItemKey);
-    let response = {};
+    let promise_array = [];
     // console.log(likedItems);
 
     if(!likedItems || !likedItems.length) {
@@ -85,13 +85,17 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
 
     // Get the details of the "likedItems" list
    if(likedItems.length){
-      for(const i = 0; i < likedItems.length; i++){
+      for (let i = 0; i < likedItems.length; i++) {
         const item_key = keyHelper.generateItemKey(likedItems[i]);
-        redisClient.hGetAll(item_key).then(item_data => {
-          response[likedItems[i]] = item_data;
-        })
+        promise_array.push(
+          new Promsise(function (resolve, reject) {
+            redisClient.hGetAll(item_key);
+          })
+        );
       }
    }
+
+   let response = await Promise.all(promise_array);
     return response;
   } catch (error) {
     throw new Error(error);
