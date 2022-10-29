@@ -68,7 +68,7 @@ exports.likeItem = async (req, res,next) => {
   const add_like_status = await itemService.likeItem(itemId, user_id);
 
   if(add_like_status && add_like_status.status === true){
-    res.status(200).send(`Item with id ${itemId} has been added successfully`);
+    res.status(200).send(`Item with id ${itemId} has been liked successfully`);
   }
   else{
     res.status(500).send({"message" : add_like_status.message});
