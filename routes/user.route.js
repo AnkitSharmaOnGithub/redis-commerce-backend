@@ -9,6 +9,8 @@ router.post('/create', userController.createUser);
 
 router.post('/login', userController.login);
 
+router.post('/view', authHelper.isLoggedIn, userController.viewUser)
+
 router.get('/test', authHelper.isLoggedIn, userController.test);
 
 module.exports = router;
