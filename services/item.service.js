@@ -63,7 +63,7 @@ exports.likeItem = async (itemId, user_id) => {
     }
 
   } catch (error) {
-    return error;
+     next(error);
   }
 };
   
