@@ -75,32 +75,32 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
   try {
     const userLikeItemKey = keyHelper.generateUserLikeKey(toViewUserId);
     const likedItems = await redisClient.sMembers(userLikeItemKey);
-    let promise_array = [];
-    // console.log(likedItems);
 
-    if(!likedItems || !likedItems.length) {
-      response['message'] = 'The user has no liked items.';
+    if (!likedItems || !likedItems.length) {
+      response["message"] = "The user has no liked items.";
       return response;
     }
 
-    // Get the details of the "likedItems" list
-   if(likedItems.length){
-      for (let i = 0; i < likedItems.length; i++) {
-        const item_key = keyHelper.generateItemKey(likedItems[i]);
-        promise_array.push(
-          new Promsise(function (resolve, reject) {
-            redisClient.hGetAll(item_key);
-          })
-        );
-      }
-   }
+    let response = [];
+    // console.log(likedItems);
 
-   let response = await Promise.all(promise_array);
+    if (likedItems.length) {
+      await Promise.all(
+        likedItems.map(async item_id => {
+          const item_data = await redisClient.hGetAll(
+            keyHelper.generateItemKey(item_id)
+          );
+          response.push({"id" : item_id, ...item_data});
+        })
+      );
+    }
+
+    console.log(response);
     return response;
   } catch (error) {
     throw new Error(error);
   }
-}
+};
 
 exports.getUserById = async (user_id) => {
   try {
@@ -117,7 +117,6 @@ exports.getUserById = async (user_id) => {
 };
 
 exports.getUserByEmail = (email) => {};
-
 // exports.setSession = async (user_id, session_data) => {
 //   try {
 //     const redis_user_key = keyHelper.generateSessionKey(user_id);
