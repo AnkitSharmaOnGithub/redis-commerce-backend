@@ -83,7 +83,14 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
       return response;
     }
 
-    response = likedItems;
+    // Get the details of the "likedItems" list
+   if(likedItems.length){
+      likedItems.map(async function(item_id) {
+        const item_key = keyHelper.generateItemKey(item_id);
+        const item_data = await redisClient.hGetAll(item_key);
+        response[item_id] = item_data;
+      });
+   }
     return response;
   } catch (error) {
     return error;
