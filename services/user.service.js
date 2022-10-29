@@ -74,16 +74,15 @@ exports.login = async (email, password) => {
 exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
   try {
     const userLikeItemKey = keyHelper.generateUserLikeKey(toViewUserId);
-    const likedItems = await redisClient.sMembers(userLikeItemKey);
+    let response = [];
+    
 
+    // Get the items liked by the current (logged in) user
+    const likedItems = await redisClient.sMembers(userLikeItemKey);
     if (!likedItems || !likedItems.length) {
       response["message"] = "The user has no liked items.";
       return response;
     }
-
-    let response = [];
-    // console.log(likedItems);
-
     if (likedItems.length) {
       await Promise.all(
         likedItems.map(async item_id => {
@@ -94,6 +93,8 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
         })
       );
     }
+
+    // Get the items liked by the current (logged in) user
 
     console.log(response);
     return response;
