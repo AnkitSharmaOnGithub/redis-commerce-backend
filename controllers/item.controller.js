@@ -55,25 +55,30 @@ exports.getItem = async (req, res, next) => {
   }
 };
 
-exports.likeItem = async (req, res,next) => {
-  const itemId = req.body.itemId;
+exports.likeItem = async (req, res, next) => {
+  try {
+    const itemId = req.body.itemId;
 
-  if (!itemId) {
-    throw new Error(`Item id is not specified`);
+    if (!itemId) {
+      throw new Error(`Item id is not specified`);
+    }
+
+    const user_data = req.session;
+    const user_id = user_data.user_id;
+
+    const add_like_status = await itemService.likeItem(itemId, user_id);
+
+    if (add_like_status && add_like_status.status === true) {
+      res
+        .status(200)
+        .send(`Item with id ${itemId} has been liked successfully`);
+    } else {
+      res.status(500).send({ message: add_like_status.message });
+    }
+  } catch (error) {
+    next(error);
   }
-
-  const user_data = req.session;
-  const user_id = user_data.user_id;
-
-  const add_like_status = await itemService.likeItem(itemId, user_id);
-
-  if(add_like_status && add_like_status.status === true){
-    res.status(200).send(`Item with id ${itemId} has been liked successfully`);
-  }
-  else{
-    res.status(500).send({"message" : add_like_status.message});
-  }
-}
+};
 
 // --------------- Utility functions ------------------------
 
