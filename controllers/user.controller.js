@@ -74,18 +74,25 @@ exports.login = async (req, res, next) => {
 };
 
 exports.viewUser = async (req, res, next) => {
-  const user_data = req.session;
-  const user_id = user_data.user_id;
-  const toViewUserId = req.body.userId;
+  try {
+    const user_data = req.session;
+    const user_id = user_data.user_id;
+    const toViewUserId = req.body.userId;
 
-  if(!user_id){
-    throw new Error('User is not logged in');
+    if (!user_id) {
+      throw new Error("User is not logged in");
+    }
+
+    const liked_items = await userService.getUserLikedItems(
+      user_id,
+      toViewUserId
+    );
+
+    res.send(liked_items);
+  } catch (error) {
+    next(error);
   }
-
-  const liked_items = await userService.getUserLikedItems(user_id, toViewUserId);
-
-  res.send(liked_items);
-}
+};
 
 exports.test = async (req, res, next) => {
   try {
