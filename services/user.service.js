@@ -94,7 +94,7 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
    }
     return response;
   } catch (error) {
-    return error;
+    throw new Error(error);
   }
 }
 
