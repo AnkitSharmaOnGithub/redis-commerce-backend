@@ -85,11 +85,12 @@ exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
 
     // Get the details of the "likedItems" list
    if(likedItems.length){
-      likedItems.map(async function(item_id) {
-        const item_key = keyHelper.generateItemKey(item_id);
-        const item_data = await redisClient.hGetAll(item_key);
-        response[item_id] = item_data;
-      });
+      for(const i = 0; i < likedItems.length; i++){
+        const item_key = keyHelper.generateItemKey(likedItems[i]);
+        redisClient.hGetAll(item_key).then(item_data => {
+          response[likedItems[i]] = item_data;
+        })
+      }
    }
     return response;
   } catch (error) {
