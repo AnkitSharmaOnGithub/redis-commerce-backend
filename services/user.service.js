@@ -117,6 +117,16 @@ exports.getUserById = async (user_id) => {
 };
 
 exports.getUserByEmail = (email) => {};
+
+// ------------------------ Utility functions ------------------------
+
+const deSerializeUser = async (user, userId) => {
+  return {
+    userId,
+    ...user
+  };
+}
+
 // exports.setSession = async (user_id, session_data) => {
 //   try {
 //     const redis_user_key = keyHelper.generateSessionKey(user_id);
