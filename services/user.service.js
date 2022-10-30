@@ -74,27 +74,43 @@ exports.login = async (email, password) => {
 exports.getUserLikedItems = async (currentUserId, toViewUserId) => {
   try {
     const userLikeItemKey = keyHelper.generateUserLikeKey(toViewUserId);
-    let response = [];
+    let response = {
+      'items_liked_by_you' : [],
+      'items_you_both_like' : []
+    };
     
 
-    // Get the items liked by the current (logged in) user
-    const likedItems = await redisClient.sMembers(userLikeItemKey);
-    if (!likedItems || !likedItems.length) {
+    // Get the items liked by the viewed user
+    const viewedUserLikedItems = await redisClient.sMembers(userLikeItemKey);
+    if (!viewedUserLikedItems || !viewedUserLikedItems.length) {
       response["message"] = "The user has no liked items.";
       return response;
     }
-    if (likedItems.length) {
+    if (viewedUserLikedItems.length) {
       await Promise.all(
-        likedItems.map(async item_id => {
+        viewedUserLikedItems.map(async item_id => {
           const item_data = await redisClient.hGetAll(
             keyHelper.generateItemKey(item_id)
           );
-          response.push({"id" : item_id, ...item_data});
+          response['items_liked_by_you'].push({"id" : item_id, ...item_data});
         })
       );
     }
 
-    // Get the items liked by the current (logged in) user
+    // Get the items liked by the both current (logged in) user & the other user
+    const loggedInUserLikeItemKey = keyHelper.generateUserLikeKey(currentUserId);
+    const commonLikedItems = await redisClient.sInter([userLikeItemKey,loggedInUserLikeItemKey]);
+
+    if (commonLikedItems.length) {
+      await Promise.all(
+        commonLikedItems.map(async item_id => {
+          const item_data = await redisClient.hGetAll(
+            keyHelper.generateItemKey(item_id)
+          );
+          response['items_you_both_like'].push({"id" : item_id, ...item_data});
+        })
+      );
+    }
 
     console.log(response);
     return response;
