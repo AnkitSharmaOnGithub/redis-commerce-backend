@@ -73,7 +73,7 @@ exports.likeItem = async (req, res, next) => {
         .status(200)
         .send(`Item with id ${itemId} has been liked successfully`);
     } else {
-      res.status(500).send({ message: add_like_status.message });
+      res.status(500).send({ "message": add_like_status.message });
     }
   } catch (error) {
     next(error);
@@ -88,6 +88,7 @@ function desearlizeItem(item, id){
     name: item.name,
     desc: item.desc,
     price: item.price,
-    valid_till: item.valid_till
+    valid_till: item.valid_till,
+    likes : item.likes
   };
 }
