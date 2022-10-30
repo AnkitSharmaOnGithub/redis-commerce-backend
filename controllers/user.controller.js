@@ -88,7 +88,7 @@ exports.getLikedItems = async (req, res, next) => {
       toViewUserId
     );
 
-    res.send(liked_items);
+    res.status(200).send(liked_items);
   } catch (error) {
     next(error);
   }
