@@ -13,6 +13,7 @@ exports.createItem = async (itemData) => {
       redisClient.hSet(item_key, "desc", itemData.desc),
       redisClient.hSet(item_key, "price", itemData.price),
       redisClient.hSet(item_key, "valid_till", itemData.valid_till),
+      redisClient.hSet(item_key, "likes", 0)
     ]);
 
     if (creation_status.every((el) => el === 1)) {
@@ -59,8 +60,11 @@ exports.likeItem = async (itemId, user_id) => {
         throw new Error("Liking the item failed. ");
       }
 
-      return { status: true };
     }
+    else{
+      await redisClient.hIncrBy(user_item_key,"likes", 1);
+    }
+    return { status: true };
 
   } catch (error) {
      next(error);
