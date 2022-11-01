@@ -15,4 +15,7 @@ router.get('/get/:itemId', authHelper.isLoggedIn, itemController.getItem);
 // Like an item
 router.post('/like', authHelper.isLoggedIn, itemController.likeItem);
 
+// Unlike an item
+router.post('/unlike', authHelper.isLoggedIn, itemController.unlikeItem);
+
 module.exports = router;
