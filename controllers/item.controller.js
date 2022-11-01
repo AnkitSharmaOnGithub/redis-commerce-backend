@@ -80,6 +80,31 @@ exports.likeItem = async (req, res, next) => {
   }
 };
 
+exports.unlikeItem = async (req, res, next) => {
+  try {
+    const itemId = req.body.itemId;
+
+    if (!itemId) {
+      throw new Error(`Item id is not specified.`);
+    }
+
+    const user_data = req.session;
+    const user_id = user_data.user_id;
+
+    const unlike_status = await itemService.unlikeItem(itemId, user_id);
+
+    if (unlike_status && unlike_status.status === true) {
+      res
+        .status(200)
+        .send(`Item with id ${itemId} has been unliked successfully.`);
+    } else {
+      res.status(500).send({ "message": add_like_status.message });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
 // --------------- Utility functions ------------------------
 
 function desearlizeItem(item, id){
