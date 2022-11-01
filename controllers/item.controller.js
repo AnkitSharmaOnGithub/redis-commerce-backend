@@ -71,7 +71,7 @@ exports.likeItem = async (req, res, next) => {
     if (add_like_status && add_like_status.status === true) {
       res
         .status(200)
-        .send(`Item with id ${itemId} has been liked successfully`);
+        .send(`Item with id ${itemId} has been liked successfully.`);
     } else {
       res.status(500).send({ "message": add_like_status.message });
     }
