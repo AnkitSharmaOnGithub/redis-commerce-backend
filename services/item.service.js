@@ -79,4 +79,58 @@ exports.likeItem = async (itemId, user_id) => {
      return error;
   }
 };
+
+exports.unlikeItem = async (itemId, user_id) => {
+  try {
+    const user_item_key = keyHelper.generateUserLikeKey(user_id);
+    const item_key = keyHelper.generateItemKey(itemId);
+    // Check if item to be unliked already exists or not
+    const item_present = await redisClient.hExists(item_key, "name");
+    
+    if (item_present) {
+      // Check if item is already liked or not.
+      const item_already_liked = await redisClient.sIsMember(
+        user_item_key,
+        itemId
+      );
+
+      if (item_already_liked) {
+        // Try to unlike the item to the set.
+        const item_unlike_status = await redisClient.SREM(
+          user_item_key,
+          itemId
+        );
+
+        // If the unliking the item failed
+        if (item_unlike_status) {
+          // Decrement the like counter in the "item" hash
+          const unlikeIncrStatus = await redisClient.hIncrBy(
+            item_key,
+            "likes",
+            -1
+          );
+          console.log(unlikeIncrStatus);
+        } else {
+          throw new Error(
+            "Some error occured in liking the item. Please try again."
+          );
+        }
+      }
+      else{
+        throw new Error(
+          "Item is not liked by the user. So, it cannot be unliked."
+        );
+      }
+
+      return { status: true };
+    } else {
+      throw new Error(`The item with id ${itemId} does not exist.`);
+    }
+
+  } catch (error) {
+     return error;
+  }
+}
+
+exports
   
