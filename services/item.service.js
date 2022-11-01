@@ -65,7 +65,7 @@ exports.likeItem = async (itemId, user_id) => {
       }
       else{
         // Increment the like counter in the "item" hash
-        const likeIncrStatus = await redisClient.hIncrBy(user_item_key,'likes',1);
+        const likeIncrStatus = await redisClient.hIncrBy(item_key,'likes',1);
         console.log(likeIncrStatus);
       }
 
