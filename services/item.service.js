@@ -43,15 +43,19 @@ exports.likeItem = async (itemId, user_id) => {
     const item_key = keyHelper.generateItemKey(itemId);
     // Check if item to be liked already exists or not
     const item_present = await redisClient.hExists(item_key, "name");
-
+    
     if (item_present) {
+      // Try to like the item to the set.
       const item_add_status = await redisClient.sAdd(user_item_key, itemId);
 
+      // If the liking the item failed
       if (!item_add_status) {
+        // Then, check if the item is already liked before
         const item_already_liked = await redisClient.sIsMember(
           user_item_key,
           itemId
         );
+        // If the item is already liked, then throw the error
         if (item_already_liked) {
           throw new Error(
             `Item with id ${itemId} has been already liked before.`
@@ -59,12 +63,15 @@ exports.likeItem = async (itemId, user_id) => {
         }
         throw new Error("Liking the item failed. ");
       }
-    } else {
-      await redisClient.hIncrBy(user_item_key, "likes", 1);
+
+      return { status: true };
     }
-    return { status: true };
+    else{
+      throw new Error(`The item with id ${itemId} does not exist.`);
+    }
+
   } catch (error) {
-    next(error);
+     return error;
   }
 };
   
