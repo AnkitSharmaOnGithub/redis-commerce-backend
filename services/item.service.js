@@ -61,11 +61,12 @@ exports.likeItem = async (itemId, user_id) => {
             `Item with id ${itemId} has been already liked before.`
           );
         }
-        throw new Error("Liking the item failed. ");
+        throw new Error("Liking the item failed.");
       }
       else{
         // Increment the like counter in the "item" hash
-        await redisClient.hIncrBy(user_item_key,'likes',1);
+        const likeIncrStatus = await redisClient.hIncrBy(user_item_key,'likes',1);
+        console.log(likeIncrStatus);
       }
 
       return { status: true };
