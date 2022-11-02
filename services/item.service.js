@@ -31,8 +31,16 @@ exports.getItem = async (itemId) => {
     const itemKey = keyHelper.generateItemKey(itemId);
 
     const item = await redisClient.hGetAll(itemKey);
+
+    if(!item || Object.keys(item).length === 0) {
+      throw new Error(`Item with id ${itemId} not found`);
+    }
+
     return item;
   } catch (error) {
+    if(!error.status){
+      error.status = 500;
+    }
     return error;
   }
 };
