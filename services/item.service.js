@@ -3,7 +3,6 @@ const keyHelper = require("../helpers/key.helper");
 const uuidHelper = require("../helpers/uuid.helper");
 
 exports.createItem = async (itemData) => {
-  try {
     const item_id = uuidHelper.generateUniqueUuidKey();
     const item_key = keyHelper.generateItemKey(item_id);
 
@@ -21,32 +20,29 @@ exports.createItem = async (itemData) => {
     }
 
     // Map the user to the item
-  } catch (error) {
-    return error;
-  }
 };
 
 exports.getItem = async (itemId) => {
-  try {
+  // try {
     const itemKey = keyHelper.generateItemKey(itemId);
 
     const item = await redisClient.hGetAll(itemKey);
 
     if(!item || Object.keys(item).length === 0) {
-      throw new Error(`Item with id ${itemId} not found`);
+      throw ({"message" : `Item with id ${itemId} not found`});
     }
 
     return item;
-  } catch (error) {
-    if(!error.status){
-      error.status = 500;
-    }
-    return error;
-  }
+  // } 
+  // catch (error) {
+  //   if(!error.status){
+  //     error.status = 500;
+  //   }
+  //   return error;
+  // }
 };
 
 exports.likeItem = async (itemId, user_id) => {
-  try {
     const user_item_key = keyHelper.generateUserLikeKey(user_id);
     const item_key = keyHelper.generateItemKey(itemId);
     // Check if item to be liked already exists or not
@@ -82,14 +78,9 @@ exports.likeItem = async (itemId, user_id) => {
     else{
       throw new Error(`The item with id ${itemId} does not exist.`);
     }
-
-  } catch (error) {
-     return error;
-  }
 };
 
 exports.unlikeItem = async (itemId, user_id) => {
-  try {
     const user_item_key = keyHelper.generateUserLikeKey(user_id);
     const item_key = keyHelper.generateItemKey(itemId);
     // Check if item to be unliked already exists or not
@@ -134,10 +125,6 @@ exports.unlikeItem = async (itemId, user_id) => {
     } else {
       throw new Error(`The item with id ${itemId} does not exist.`);
     }
-
-  } catch (error) {
-     return error;
-  }
 }
 
 exports
