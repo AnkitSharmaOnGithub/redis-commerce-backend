@@ -46,7 +46,8 @@ server.use('/item', itemRoutes);
 
 // Make the server listen to the PORT(env file)
 server.use((error, req, res, next) => {
-  console.log(error);
+  console.log(`Logging customer error................................................................`);
+  console.log(error.message);
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
